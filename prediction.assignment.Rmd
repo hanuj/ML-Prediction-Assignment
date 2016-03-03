@@ -45,6 +45,7 @@ train<-training[-train.indices,]
 trainClass<-train$classe
 train$classe<-NULL
 
+#remove the predicted variables to different datasets
 testClass<-test$classe
 test$classe<-NULL
 
@@ -59,16 +60,22 @@ print(cor)
 train <- train[, -findCorrelation(train,cutoff=0.9,exact=F)]
 rm(trainCor)
 
-#train C5.0 model
+#set seed for psuedo-random numbers
 set.seed(666)
+
+#train C5.0 model -- NOTE: this can take a while ----------
 m1<-train(x=train,y=trainClass,method="C5.0")
+
+#look at the model results
 m1
 
-#test C5.0 model
+#test C5.0 model on the test set
 pred1<-predict(m1,test)
 confusionMatrix(pred1,testClass)
 
 #predict values for testing set
 pred2<-predict(m1,testing)
 View(pred2)
+
+#End
 ```

@@ -1,0 +1,76 @@
+---
+title: "Prediction Assignment for ML MOOC"
+author: "Harsh Anuj"
+date: "March 2, 2016"
+output: html_document
+---
+# Prediction assignment for Johns Hopkins Coursera course on Machine Learning
+
+The idea of this project is to predict as correctly as possible the position in which the excercise was conducted by the test subjects in the Ulingo et. al.(2012) paper on wearable computing. [enter link here].
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r eval=FALSE}
+#load required libraries
+library(caret)
+library(C50)
+library(plyr)
+
+#load datasets
+testing <- read.csv("C:/R/MOOC_ML/pml-testing.csv")
+training <- read.csv("C:/R/MOOC_ML/pml-training.csv")
+
+#remove variables with complete missing values in test set
+testing<-testing[,colSums(is.na(testing)) == 0]
+
+#we can see that the 60th and first 7 variables are non-predictor variables -- remove them from the testing set
+testing[,60]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+testing[,1]<-NULL
+
+#set the seed for psuedo-random numbers
+set.seed(12334)
+train.indices<-sample(1:nrow(training),7850)
+test<-training[train.indices,]
+train<-training[-train.indices,]
+
+#remove the predicted variables to different datasets
+trainClass<-train$classe
+train$classe<-NULL
+
+testClass<-test$classe
+test$classe<-NULL
+
+#subset the training data
+names_index_test<-names(testing)
+train<-train[names_index_test]
+test<-test[names_index_test]
+
+#remove variables with high collinearity
+trainCor<-cor(train)
+print(cor)
+train <- train[, -findCorrelation(train,cutoff=0.9,exact=F)]
+rm(trainCor)
+
+#train C5.0 model
+set.seed(666)
+m1<-train(x=train,y=trainClass,method="C5.0")
+m1
+
+#test C5.0 model
+pred1<-predict(m1,test)
+confusionMatrix(pred1,testClass)
+
+#predict values for testing set
+pred2<-predict(m1,testing)
+View(pred2)
+```

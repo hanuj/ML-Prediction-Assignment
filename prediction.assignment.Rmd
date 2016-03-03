@@ -6,7 +6,7 @@ output: html_document
 ---
 # Prediction assignment for Johns Hopkins Coursera course on Machine Learning
 
-The idea of this project is to predict as correctly as possible the position in which the excercise was conducted by the test subjects in the Ulingo et. al.(2012) paper on wearable computing. [http://perceptual.mpi-inf.mpg.de/files/2013/03/velloso13_ah.pdf].
+The R code presented below seeks to predict as accurately as possible the position in which weightlifting excercises were performed by test subjects in the Ulingo et. al.(2012) study on wearable computing(http://perceptual.mpi-inf.mpg.de/files/2013/03/velloso13_ah.pdf). The interest here is to create a prediction algorithm using techniques learnt in the course.
 
 ## R Markdown
 

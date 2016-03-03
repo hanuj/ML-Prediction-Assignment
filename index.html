@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Ml-prediction-assignment by hanuj</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Ml-prediction-assignment</h1>
+      <h2 class="project-tagline">R code for ML course prediction assignment</h2>
+      <a href="https://github.com/hanuj/ML-Prediction-Assignment" class="btn">View on GitHub</a>
+      <a href="https://github.com/hanuj/ML-Prediction-Assignment/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/hanuj/ML-Prediction-Assignment/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p>Prediction Assignment for ML MOOC
+Harsh Anuj</p>
+
+<p>March 2, 2016</p>
+
+<p>Prediction assignment for Johns Hopkins Coursera course on Machine Learning
+The idea of this project is to predict as correctly as possible the position in which the excercise was conducted by the test subjects in the Ulingo et. al.(2012) paper on wearable computing. [enter link here].</p>
+
+<p>R Markdown</p>
+
+<h1>
+<a id="load-required-libraries" class="anchor" href="#load-required-libraries" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>load required libraries</h1>
+
+<p>library(caret)
+library(C50)
+library(plyr)</p>
+
+<h1>
+<a id="load-datasets" class="anchor" href="#load-datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>load datasets</h1>
+
+<p>testing &lt;- read.csv("C:/R/MOOC_ML/pml-testing.csv")
+training &lt;- read.csv("C:/R/MOOC_ML/pml-training.csv")</p>
+
+<h1>
+<a id="remove-variables-with-complete-missing-values-in-test-set" class="anchor" href="#remove-variables-with-complete-missing-values-in-test-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>remove variables with complete missing values in test set</h1>
+
+<p>testing&lt;-testing[,colSums(is.na(testing)) == 0]</p>
+
+<h1>
+<a id="we-can-see-that-the-60th-and-first-7-variables-are-non-predictor-variables----remove-them-from-the-testing-set" class="anchor" href="#we-can-see-that-the-60th-and-first-7-variables-are-non-predictor-variables----remove-them-from-the-testing-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>we can see that the 60th and first 7 variables are non-predictor variables -- remove them from the testing set</h1>
+
+<p>testing[,60]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL
+testing[,1]&lt;-NULL</p>
+
+<h1>
+<a id="set-the-seed-for-psuedo-random-numbers" class="anchor" href="#set-the-seed-for-psuedo-random-numbers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>set the seed for psuedo-random numbers</h1>
+
+<p>set.seed(12334)
+train.indices&lt;-sample(1:nrow(training),7850)
+test&lt;-training[train.indices,]
+train&lt;-training[-train.indices,]</p>
+
+<h1>
+<a id="remove-the-predicted-variables-to-different-datasets" class="anchor" href="#remove-the-predicted-variables-to-different-datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>remove the predicted variables to different datasets</h1>
+
+<p>trainClass&lt;-train$classe
+train$classe&lt;-NULL</p>
+
+<p>testClass&lt;-test$classe
+test$classe&lt;-NULL</p>
+
+<h1>
+<a id="subset-the-training-data" class="anchor" href="#subset-the-training-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>subset the training data</h1>
+
+<p>names_index_test&lt;-names(testing)
+train&lt;-train[names_index_test]
+test&lt;-test[names_index_test]</p>
+
+<h1>
+<a id="remove-variables-with-high-collinearity" class="anchor" href="#remove-variables-with-high-collinearity" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>remove variables with high collinearity</h1>
+
+<p>trainCor&lt;-cor(train)
+print(cor)
+train &lt;- train[, -findCorrelation(train,cutoff=0.9,exact=F)]
+rm(trainCor)</p>
+
+<h1>
+<a id="train-c50-model" class="anchor" href="#train-c50-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>train C5.0 model</h1>
+
+<p>set.seed(666)
+m1&lt;-train(x=train,y=trainClass,method="C5.0")
+m1</p>
+
+<h1>
+<a id="test-c50-model" class="anchor" href="#test-c50-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>test C5.0 model</h1>
+
+<p>pred1&lt;-predict(m1,test)
+confusionMatrix(pred1,testClass)</p>
+
+<h1>
+<a id="predict-values-for-testing-set" class="anchor" href="#predict-values-for-testing-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>predict values for testing set</h1>
+
+<p>pred2&lt;-predict(m1,testing)
+View(pred2)</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/hanuj/ML-Prediction-Assignment">Ml-prediction-assignment</a> is maintained by <a href="https://github.com/hanuj">hanuj</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
